@@ -25,12 +25,18 @@ const queryClient = new QueryClient();
 
 const App = () => {
   const [showLoading, setShowLoading] = useState(() => {
-    const hasLoadedBefore = localStorage.getItem('appHasLoadedBefore');
-    return !hasLoadedBefore;
+    if (typeof window === 'undefined') return false;
+
+    const navigationType = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+
+    if (navigationType) {
+      return navigationType.type === 'navigate' || navigationType.type === 'reload';
+    }
+
+    return true;
   });
 
   const handleLoadingComplete = () => {
-    localStorage.setItem('appHasLoadedBefore', 'true');
     setShowLoading(false);
   };
 
